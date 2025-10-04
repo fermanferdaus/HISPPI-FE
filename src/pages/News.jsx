@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { formatDate } from "../utils/formatDate";
-import { Search } from "lucide-react"; // pake lucide-react biar icon konsisten
+import { Search } from "lucide-react";
+import { API_BASE_URL } from "../config/api";
 
 export default function News() {
   const [news, setNews] = useState([]);
   const [query, setQuery] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/news")
+    fetch(`${API_BASE_URL}/news`)
       .then((res) => res.json())
       .then((data) => setNews(data));
   }, []);
@@ -46,7 +47,10 @@ export default function News() {
 
           {/* Search */}
           <div className="mt-8 md:mt-0 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <Search
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              size={18}
+            />
             <motion.input
               type="text"
               placeholder="Cari berita atau isu..."
@@ -81,7 +85,7 @@ export default function News() {
                 {item.image && (
                   <div className="relative overflow-hidden">
                     <img
-                      src={`http://localhost:5000/uploads/${item.image}`}
+                      src={`${API_BASE_URL}/uploads/${item.image}`}
                       alt={item.title}
                       className="h-52 w-full object-cover transform group-hover:scale-105 transition duration-500"
                     />

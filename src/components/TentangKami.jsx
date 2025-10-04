@@ -24,13 +24,16 @@ export default function TentangKami() {
             Tentang Kami
           </h4>
           <h2 className="text-4xl md:text-5xl font-extrabold text-gray-800 mb-6 leading-snug">
-            Meningkatkan <span className="text-green-700">Pendidikan Non Formal</span> di Indonesia
+            Meningkatkan{" "}
+            <span className="text-green-700">Pendidikan Non Formal</span> di
+            Indonesia
           </h2>
           <p className="text-gray-600 text-lg leading-relaxed mb-6">
-            <span className="font-semibold text-green-700">HISPPI PNF</span> adalah wadah 
-            untuk mendukung pendidik & penguji dalam meningkatkan kualitas pendidikan 
-            non formal di Indonesia. Kami berkomitmen memperkuat peran organisasi 
-            dalam kemitraan nasional maupun internasional, serta mencetak generasi emas bangsa.
+            <span className="font-semibold text-green-700">HISPPI PNF</span>{" "}
+            adalah wadah untuk mendukung pendidik & penguji dalam meningkatkan
+            kualitas pendidikan non formal di Indonesia. Kami berkomitmen
+            memperkuat peran organisasi dalam kemitraan nasional maupun
+            internasional, serta mencetak generasi emas bangsa.
           </p>
         </div>
       </div>

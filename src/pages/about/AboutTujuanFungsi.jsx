@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { API_BASE_URL } from "../../config/api";
 
 export default function AboutTujuanFungsi() {
   const [info, setInfo] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/info")
+    fetch(`${API_BASE_URL}/info`)
       .then((res) => res.json())
       .then((data) => setInfo(data))
       .catch(() => setInfo([]));

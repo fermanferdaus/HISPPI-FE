@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { API_BASE_URL } from "../../config/api";
 
 export default function AboutKepengurusan() {
   const [pengurus, setPengurus] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/kepengurusan")
+    fetch(`${API_BASE_URL}/kepengurusan`)
       .then((res) => res.json())
       .then((data) => setPengurus(data))
       .catch(() => setPengurus([]));

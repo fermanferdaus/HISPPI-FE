@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { formatDate } from "../utils/formatDate";
+import { API_BASE_URL } from "../config/api";
 
 export default function NewsDetail() {
   const { id } = useParams();
   const [news, setNews] = useState(null);
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/news/${id}`)
+    fetch(`${API_BASE_URL}/news/${id}`)
       .then((res) => res.json())
       .then((data) => setNews(data))
       .catch(() => setNews(null));
@@ -66,7 +67,7 @@ export default function NewsDetail() {
             transition={{ duration: 0.6 }}
           >
             <img
-              src={`http://localhost:5000/uploads/${news.image}`}
+              src={`${API_BASE_URL}/uploads/${news.image}`}
               alt={news.title}
               className="w-full max-h-[500px] object-cover rounded-lg shadow"
             />
@@ -75,18 +76,17 @@ export default function NewsDetail() {
 
         {/* Isi Berita */}
         <motion.div
-  className="prose max-w-none text-gray-700 text-justify leading-relaxed text-lg md:text-l"
-  initial={{ opacity: 0, y: 20 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.7 }}
-  dangerouslySetInnerHTML={{
-    __html: news.content
-      .split("\n")
-      .map(p => p.trim() ? `<p class='mb-6'>${p}</p>` : "")
-      .join("")
-  }}
-></motion.div>
-
+          className="prose max-w-none text-gray-700 text-justify leading-relaxed text-lg md:text-l"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          dangerouslySetInnerHTML={{
+            __html: news.content
+              .split("\n")
+              .map((p) => (p.trim() ? `<p class='mb-6'>${p}</p>` : ""))
+              .join(""),
+          }}
+        ></motion.div>
       </div>
     </div>
   );

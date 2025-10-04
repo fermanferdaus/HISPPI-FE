@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { API_BASE_URL } from "../config/api";
 
 export default function Kemitraan() {
   const [partners, setPartners] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/partners")
+    fetch(`${API_BASE_URL}/partners`)
       .then((res) => res.json())
       .then((data) => setPartners(data));
   }, []);
@@ -50,7 +51,7 @@ export default function Kemitraan() {
               className="transform hover:scale-110 transition duration-300"
             >
               <img
-                src={`http://localhost:5000/uploads/${p.logo}`}
+                src={`${API_BASE_URL}/uploads/${p.logo}`}
                 alt={p.name}
                 className="h-12 md:h-20 w-auto object-contain drop-shadow-sm"
               />

@@ -4,12 +4,13 @@ import { Autoplay, Pagination } from "swiper/modules";
 import { motion } from "framer-motion";
 import "swiper/css";
 import "swiper/css/pagination";
+import { API_BASE_URL } from "../config/api";
 
 export default function Berita() {
   const [news, setNews] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/news")
+    fetch(`${API_BASE_URL}/news`)
       .then((res) => res.json())
       .then((data) => setNews(data.slice(0, 6)))
       .catch(() => setNews([]));
@@ -66,7 +67,7 @@ export default function Berita() {
                   {item.image && (
                     <div className="relative overflow-hidden">
                       <img
-                        src={`http://localhost:5000/uploads/${item.image}`}
+                        src={`${API_BASE_URL}/uploads/${item.image}`}
                         alt={item.title}
                         className="h-52 w-full object-cover transform group-hover:scale-110 transition duration-500"
                       />
