@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  scroll-snap-type: y proximity; /* setiap section nge-snap */
+}
+section {
+  scroll-snap-align: start;
+}
