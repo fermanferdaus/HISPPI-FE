@@ -11,28 +11,29 @@ import {
 } from "lucide-react";
 import { API_BASE_URL } from "../../config/api";
 
-export default function PengurusAdmin() {
+export default function DpdAdmin() {
   const [data, setData] = useState([]);
-  const [filteredData, setFilteredData] = useState([]); // hasil pencarian
+  const [filteredData, setFilteredData] = useState([]); // data hasil pencarian
   const [searchTerm, setSearchTerm] = useState(""); // kata kunci pencarian
   const [alert, setAlert] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const token = JSON.parse(localStorage.getItem("user"))?.token;
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = user?.token;
 
-  // 🔹 Ambil data kepengurusan
+  // 🔹 Ambil data DPD
   const fetchData = async () => {
     try {
-      const res = await fetch(`${API_BASE_URL}/kepengurusan`);
+      const res = await fetch(`${API_BASE_URL}/dpd`);
       const data = await res.json();
       setData(data);
       setFilteredData(data);
     } catch (err) {
-      console.error("Gagal mengambil data kepengurusan:", err);
+      console.error("Gagal mengambil data DPD:", err);
       setAlert({
         type: "error",
-        message: "Gagal memuat data kepengurusan.",
+        message: "Gagal memuat data Dewan Pengurus Daerah.",
       });
     }
   };
@@ -48,25 +49,25 @@ export default function PengurusAdmin() {
     }
   }, [location.state]);
 
-  // 🔍 Filter data berdasarkan pencarian
+  // 🔍 Filter data saat mengetik
   useEffect(() => {
     const term = searchTerm.toLowerCase();
     const filtered = data.filter(
       (d) =>
-        d.periode.toLowerCase().includes(term) ||
-        d.ketua_umum.toLowerCase().includes(term) ||
-        d.sekjen.toLowerCase().includes(term)
+        d.nama.toLowerCase().includes(term) ||
+        d.provinsi.toLowerCase().includes(term) ||
+        d.alamat_sekretariat.toLowerCase().includes(term)
     );
     setFilteredData(filtered);
   }, [searchTerm, data]);
 
-  // 🔹 Hapus data kepengurusan
+  // 🔹 Hapus data DPD
   const confirmDelete = async () => {
     if (!deleteTarget) return;
-    const { id, periode } = deleteTarget;
+    const { id, nama } = deleteTarget;
 
     try {
-      const res = await fetch(`${API_BASE_URL}/kepengurusan/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/dpd/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -75,7 +76,7 @@ export default function PengurusAdmin() {
       if (res.ok) {
         setAlert({
           type: "success",
-          message: `Data kepengurusan ${periode} berhasil dihapus.`,
+          message: `Data DPD ${nama} berhasil dihapus.`,
         });
         setData((prev) => prev.filter((d) => d.id !== id));
       } else {
@@ -102,10 +103,10 @@ export default function PengurusAdmin() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-3">
         <div>
           <h1 className="text-3xl font-bold text-green-700">
-            Kelola Sejarah Kepengurusan
+            Kelola Dewan Pengurus Daerah (DPD)
           </h1>
           <p className="text-gray-500 text-sm mt-1">
-            Tambah, ubah, atau hapus data kepengurusan periode HISPPI PNF.
+            Tambah, ubah, atau hapus data pengurus daerah HISPPI PNF.
           </p>
         </div>
 
@@ -122,7 +123,7 @@ export default function PengurusAdmin() {
         <Search size={18} className="text-gray-500" />
         <input
           type="text"
-          placeholder="Cari periode, ketua umum, atau sekjen..."
+          placeholder="Cari nama, provinsi, atau alamat..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full outline-none text-sm text-gray-700 placeholder-gray-400"
@@ -147,23 +148,25 @@ export default function PengurusAdmin() {
         </div>
       )}
 
-      {/* ✅ Tabel Responsif */}
+      {/* ✅ Tabel */}
       <div className="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[600px] text-sm text-left">
+          <table className="w-full min-w-[800px] text-sm text-left">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="px-6 py-3 font-semibold text-gray-700 w-16">
+                <th className="px-6 py-3 font-semibold text-gray-700 w-10">
                   #
                 </th>
+                <th className="px-6 py-3 font-semibold text-gray-700">Foto</th>
+                <th className="px-6 py-3 font-semibold text-gray-700">Nama</th>
                 <th className="px-6 py-3 font-semibold text-gray-700">
-                  Periode
+                  Provinsi
                 </th>
                 <th className="px-6 py-3 font-semibold text-gray-700">
-                  Ketua Umum
+                  Alamat Sekretariat
                 </th>
                 <th className="px-6 py-3 font-semibold text-gray-700">
-                  Sekjen
+                  Nomor Kontak
                 </th>
                 <th className="px-6 py-3 font-semibold text-gray-700 w-40">
                   Aksi
@@ -172,30 +175,40 @@ export default function PengurusAdmin() {
             </thead>
             <tbody>
               {filteredData.length > 0 ? (
-                filteredData.map((p, i) => (
+                filteredData.map((d, i) => (
                   <tr
-                    key={p.id}
+                    key={d.id}
                     className="border-b border-gray-100 hover:bg-gray-50 transition-all"
                   >
                     <td className="px-6 py-3 text-gray-700 font-medium">
                       {i + 1}
                     </td>
-                    <td className="px-6 py-3 text-gray-800 font-medium">
-                      {p.periode}
+                    <td className="px-6 py-3">
+                      <img
+                        src={`${API_BASE_URL}/uploads/${d.foto}`}
+                        alt={d.nama}
+                        className="w-14 h-14 object-cover rounded-lg border border-gray-200"
+                      />
                     </td>
-                    <td className="px-6 py-3 text-gray-700">{p.ketua_umum}</td>
-                    <td className="px-6 py-3 text-gray-700">{p.sekjen}</td>
+                    <td className="px-6 py-3 text-gray-800 font-medium">
+                      {d.nama}
+                    </td>
+                    <td className="px-6 py-3 text-gray-600">{d.provinsi}</td>
+                    <td className="px-6 py-3 text-gray-600">
+                      {d.alamat_sekretariat}
+                    </td>
+                    <td className="px-6 py-3 text-gray-700">{d.nomor}</td>
                     <td className="px-6 py-3 text-center">
                       <div className="flex justify-center space-x-2">
                         <button
-                          onClick={() => navigate(`edit/${p.id}`)}
+                          onClick={() => navigate(`edit/${d.id}`)}
                           className="inline-flex items-center gap-1 bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded-md text-xs font-medium transition-all shadow-sm"
                         >
                           <Pencil size={14} /> Edit
                         </button>
                         <button
                           onClick={() =>
-                            setDeleteTarget({ id: p.id, periode: p.periode })
+                            setDeleteTarget({ id: d.id, nama: d.nama })
                           }
                           className="inline-flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-xs font-medium transition-all shadow-sm"
                         >
@@ -208,12 +221,12 @@ export default function PengurusAdmin() {
               ) : (
                 <tr>
                   <td
-                    colSpan="5"
+                    colSpan="7"
                     className="text-center py-6 text-gray-500 italic"
                   >
                     {searchTerm
                       ? "Tidak ada hasil pencarian."
-                      : "Belum ada data kepengurusan."}
+                      : "Belum ada data DPD."}
                   </td>
                 </tr>
               )}
@@ -222,7 +235,7 @@ export default function PengurusAdmin() {
         </div>
       </div>
 
-      {/* Modal Hapus */}
+      {/* Modal Konfirmasi Hapus */}
       {deleteTarget && (
         <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-lg p-6 max-w-sm w-full border border-gray-100">
@@ -233,9 +246,9 @@ export default function PengurusAdmin() {
               </h2>
             </div>
             <p className="text-gray-600 text-sm mb-6">
-              Yakin ingin menghapus data kepengurusan{" "}
+              Yakin ingin menghapus data DPD{" "}
               <span className="font-semibold text-gray-800">
-                "{deleteTarget.periode}"
+                "{deleteTarget.nama}"
               </span>
               ? Tindakan ini tidak dapat dibatalkan.
             </p>

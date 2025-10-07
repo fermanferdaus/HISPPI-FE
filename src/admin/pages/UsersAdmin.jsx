@@ -7,11 +7,14 @@ import {
   AlertTriangle,
   CheckCircle2,
   XCircle,
+  Search,
 } from "lucide-react";
 import { API_BASE_URL } from "../../config/api";
 
 export default function AdminList() {
   const [admins, setAdmins] = useState([]);
+  const [filteredAdmins, setFilteredAdmins] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [alert, setAlert] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const navigate = useNavigate();
@@ -36,6 +39,7 @@ export default function AdminList() {
       const data = await res.json();
       const filtered = data.filter((u) => u.role === "admin");
       setAdmins(filtered);
+      setFilteredAdmins(filtered);
     } catch (err) {
       console.error("Gagal memuat data admin:", err);
       showAlert("error", "Gagal memuat data admin.");
@@ -45,6 +49,17 @@ export default function AdminList() {
   useEffect(() => {
     fetchAdmins();
   }, []);
+
+  // 🔍 Filter pencarian
+  useEffect(() => {
+    const term = searchTerm.toLowerCase();
+    const filtered = admins.filter(
+      (a) =>
+        a.name.toLowerCase().includes(term) ||
+        a.email.toLowerCase().includes(term)
+    );
+    setFilteredAdmins(filtered);
+  }, [searchTerm, admins]);
 
   // 🔹 Alert helper
   const showAlert = (type, message) => {
@@ -77,13 +92,13 @@ export default function AdminList() {
   return (
     <div className="p-4 relative">
       {/* Header */}
-      <div className="flex justify-between items-center mb-8 flex-wrap gap-4">
+      <div className="flex justify-between items-start sm:items-center flex-col sm:flex-row mb-8 gap-3">
         <div>
           <h1 className="text-3xl font-bold text-green-700">
             Kelola Admin Sistem
           </h1>
           <p className="text-gray-500 text-sm mt-1">
-            Tambah, ubah, atau hapus akun admin pada sistem HISPII PNF.
+            Tambah, ubah, atau hapus akun admin pada sistem HISPPI PNF.
           </p>
         </div>
         <button
@@ -92,6 +107,18 @@ export default function AdminList() {
         >
           <PlusCircle size={18} /> Tambah Admin
         </button>
+      </div>
+
+      {/* 🔍 Pencarian */}
+      <div className="mb-6 flex items-center gap-3 bg-white border border-gray-200 rounded-lg px-4 py-2 shadow-sm max-w-sm">
+        <Search size={18} className="text-gray-500" />
+        <input
+          type="text"
+          placeholder="Cari nama atau email admin..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full outline-none text-sm text-gray-700 placeholder-gray-400"
+        />
       </div>
 
       {/* Alert */}
@@ -127,48 +154,50 @@ export default function AdminList() {
               </tr>
             </thead>
             <tbody>
-              {admins.map((a, i) => (
-                <tr
-                  key={a.id}
-                  className={`${
-                    i % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  } hover:bg-green-50/60 transition`}
-                >
-                  <td className="px-6 py-3 border-b border-gray-100 font-medium text-gray-700">
-                    {i + 1}
-                  </td>
-                  <td className="px-6 py-3 border-b border-gray-100">
-                    {a.name}
-                  </td>
-                  <td className="px-6 py-3 border-b border-gray-100">
-                    {a.email}
-                  </td>
-                  <td className="px-6 py-3 text-center border-b border-gray-100">
-                    <div className="flex justify-center space-x-2">
-                      <button
-                        onClick={() => navigate(`edit/${a.id}`)}
-                        className="inline-flex items-center gap-1 bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1.5 rounded-md text-xs font-medium transition shadow-sm"
-                      >
-                        <Pencil size={14} /> Edit
-                      </button>
-                      <button
-                        onClick={() => setDeleteTarget(a)}
-                        className="inline-flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-md text-xs font-medium transition shadow-sm"
-                      >
-                        <Trash2 size={14} /> Hapus
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-
-              {admins.length === 0 && (
+              {filteredAdmins.length > 0 ? (
+                filteredAdmins.map((a, i) => (
+                  <tr
+                    key={a.id}
+                    className={`${
+                      i % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    } hover:bg-green-50/60 transition`}
+                  >
+                    <td className="px-6 py-3 border-b border-gray-100 font-medium text-gray-700">
+                      {i + 1}
+                    </td>
+                    <td className="px-6 py-3 border-b border-gray-100">
+                      {a.name}
+                    </td>
+                    <td className="px-6 py-3 border-b border-gray-100">
+                      {a.email}
+                    </td>
+                    <td className="px-6 py-3 text-center border-b border-gray-100">
+                      <div className="flex justify-center space-x-2">
+                        <button
+                          onClick={() => navigate(`edit/${a.id}`)}
+                          className="inline-flex items-center gap-1 bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1.5 rounded-md text-xs font-medium transition shadow-sm"
+                        >
+                          <Pencil size={14} /> Edit
+                        </button>
+                        <button
+                          onClick={() => setDeleteTarget(a)}
+                          className="inline-flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-md text-xs font-medium transition shadow-sm"
+                        >
+                          <Trash2 size={14} /> Hapus
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
                 <tr>
                   <td
                     colSpan="4"
                     className="text-center py-6 text-gray-500 italic"
                   >
-                    Belum ada admin yang terdaftar.
+                    {searchTerm
+                      ? "Tidak ada hasil pencarian."
+                      : "Belum ada admin yang terdaftar."}
                   </td>
                 </tr>
               )}

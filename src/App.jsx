@@ -15,6 +15,8 @@ import AboutSekretariat from "./pages/about/AboutSekretariat";
 import AboutProgramKerja from "./pages/about/AboutProgja";
 import AboutLagu from "./pages/about/AboutLagu";
 import AboutKepengurusan from "./pages/about/AboutKepengurusan";
+import KetuaDPD from "./pages/about/KetuaDPD";
+import PengurusDPP from "./pages/StrukturOrganisasi";
 
 // Admin Area
 import ProtectedRoute from "./auth/ProtectedRoute";
@@ -34,6 +36,12 @@ import PartnersAdd from "./admin/pages/partners/PartnersAdd";
 import PartnersEdit from "./admin/pages/partners/PartnersEdit";
 import AdminAdd from "./admin/pages/user_admin/AdminAdd";
 import AdminEdit from "./admin/pages/user_admin/AdminEdit";
+import DpdAdmin from "./admin/pages/DpdAdmin";
+import DpdAdd from "./admin/pages/dpd/DpdAdd";
+import DpdEdit from "./admin/pages/dpd/DpdEdit";
+import StrukturAdmin from "./admin/pages/StrukturAdmin";
+import StrukturAdd from "./admin/pages/struktur/StrukturAdd";
+import StrukturEdit from "./admin/pages/struktur/StrukturEdit";
 
 export default function App() {
   const location = useLocation();
@@ -72,6 +80,12 @@ export default function App() {
             <Route path="pengurus" element={<PengurusAdmin />} />
             <Route path="pengurus/add" element={<PengurusAdd />} />
             <Route path="pengurus/edit/:id" element={<PengurusEdit />} />
+            <Route path="dpd" element={<DpdAdmin />} />
+            <Route path="dpd/add" element={<DpdAdd />} />
+            <Route path="dpd/edit/:id" element={<DpdEdit />} />
+            <Route path="struktur" element={<StrukturAdmin />} />
+            <Route path="struktur/add" element={<StrukturAdd />} />
+            <Route path="struktur/edit/:id" element={<StrukturEdit />} />
             <Route path="users/add" element={<AdminAdd />} />
             <Route path="users/edit/:id" element={<AdminEdit />} />
             <Route
@@ -92,9 +106,11 @@ export default function App() {
           <Route path="/about/visi-misi" element={<AboutVisiMisi />} />
           <Route path="/about/tujuan-fungsi" element={<AboutTujuanFungsi />} />
           <Route path="/about/logo" element={<AboutLogo />} />
-          <Route path="/about/sekretariat" element={<AboutSekretariat />} />
+          <Route path="/about/kontak" element={<AboutSekretariat />} />
           <Route path="/about/program-kerja" element={<AboutProgramKerja />} />
           <Route path="/about/lagu" element={<AboutLagu />} />
+          <Route path="/ketua-dpd" element={<KetuaDPD />} />
+          <Route path="/pengurus" element={<PengurusDPP />} />
           <Route
             path="/about/sejarah-kepengurusan"
             element={<AboutKepengurusan />}

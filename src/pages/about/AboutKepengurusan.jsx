@@ -12,11 +12,8 @@ export default function AboutKepengurusan() {
       .catch(() => setPengurus([]));
   }, []);
 
-  // ✅ helper untuk pecah menjadi list jika ada lebih dari satu sekretaris
   const renderSekjen = (sekjen) => {
     if (!sekjen) return "-";
-
-    // cek apakah ada pola angka 1. 2. 3. dst
     const items = sekjen
       .split(/(?=\d+\.\s)/)
       .map((s) => s.trim())
@@ -24,28 +21,24 @@ export default function AboutKepengurusan() {
 
     if (items.length > 1) {
       return (
-        <ol className="list-decimal list-inside space-y-1">
+        <ul className="space-y-1">
           {items.map((item, idx) => (
-            <li
-              key={idx}
-              className="text-gray-900 leading-relaxed" // ✅ konsisten warna & style
-            >
+            <li key={idx} className="text-gray-700 leading-relaxed">
               {item.replace(/^\d+\.\s*/, "")}
             </li>
           ))}
-        </ol>
+        </ul>
       );
     }
-
-    return <span className="text-gray-900 leading-relaxed">{sekjen}</span>;
+    return <span className="text-gray-700 leading-relaxed">{sekjen}</span>;
   };
 
   return (
     <section className="pt-28 pb-20 bg-gradient-to-b from-white to-gray-50 min-h-screen">
       <div className="max-w-6xl mx-auto px-6">
-        {/* ✅ Judul ala card hijau muda */}
+        {/* ✅ Header */}
         <motion.div
-          className="bg-green-50 rounded-2xl shadow px-8 py-12 mb-12 relative overflow-hidden text-left"
+          className="bg-green-50 rounded-2xl shadow px-8 py-12 mb-12 text-left"
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -64,40 +57,47 @@ export default function AboutKepengurusan() {
           </p>
         </motion.div>
 
-        {/* ✅ Tabel Kepengurusan */}
+        {/* ✅ Tabel Minimalist */}
         <motion.div
-          className="bg-white shadow-md rounded-xl p-6 hover:shadow-xl transition"
+          className="bg-white shadow-sm rounded-2xl p-6 border border-gray-100 hover:shadow-md transition"
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
           <div className="overflow-x-auto">
-            <table className="w-full border border-gray-200 rounded-lg overflow-hidden">
-              <thead className="bg-green-700 text-white">
-                <tr>
-                  <th className="px-4 py-3 text-left w-12">No</th>
-                  <th className="px-4 py-3 text-left">Periode</th>
-                  <th className="px-4 py-3 text-left">Ketua Umum</th>
-                  <th className="px-4 py-3 text-left">Sekretaris Jenderal</th>
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="text-left border-b border-gray-100 text-gray-600 text-sm uppercase tracking-wide">
+                  <th className="py-3 px-4 w-12 font-semibold">No</th>
+                  <th className="py-3 px-4 font-semibold">Periode</th>
+                  <th className="py-3 px-4 font-semibold">Ketua Umum</th>
+                  <th className="py-3 px-4 font-semibold">
+                    Sekretaris Jenderal
+                  </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody>
                 {pengurus.length > 0 ? (
                   pengurus.map((row, index) => (
-                    <tr key={row.id} className="hover:bg-gray-50 transition">
-                      <td className="px-4 py-3 font-semibold text-gray-700">
-                        {index + 1}
+                    <tr
+                      key={row.id}
+                      className="hover:bg-green-50 transition cursor-default"
+                    >
+                      <td className="py-3 px-4 text-gray-700">{index + 1}</td>
+                      <td className="py-3 px-4 text-gray-800 font-medium">
+                        {row.periode}
                       </td>
-                      <td className="px-4 py-3">{row.periode}</td>
-                      <td className="px-4 py-3">{row.ketua_umum}</td>
-                      <td className="px-4 py-3">{renderSekjen(row.sekjen)}</td>
+                      <td className="py-3 px-4 text-gray-800">
+                        {row.ketua_umum}
+                      </td>
+                      <td className="py-3 px-4">{renderSekjen(row.sekjen)}</td>
                     </tr>
                   ))
                 ) : (
                   <tr>
                     <td
                       colSpan="4"
-                      className="px-4 py-6 text-center text-gray-500"
+                      className="text-center py-6 text-gray-500 italic"
                     >
                       Belum ada data kepengurusan.
                     </td>

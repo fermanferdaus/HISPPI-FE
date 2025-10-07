@@ -17,7 +17,7 @@ export default function Berita() {
   }, []);
 
   return (
-    <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+    <section className="py-20 bg-gradient-to-b from-green-100 to-gray-50">
       <div className="max-w-6xl mx-auto px-6">
         {/* Judul */}
         <motion.div
@@ -57,7 +57,7 @@ export default function Berita() {
             {news.map((item, index) => (
               <SwiperSlide key={item.id}>
                 <motion.div
-                  className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition duration-500 h-full flex flex-col group"
+                  className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition duration-500 h-full flex flex-col"
                   initial={{ opacity: 0, y: 50 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: index * 0.15 }}
@@ -80,34 +80,41 @@ export default function Berita() {
                   )}
 
                   {/* Isi Berita */}
-                  <div className="p-6 flex flex-col flex-grow">
-                    <h3 className="font-bold text-xl text-green-700 mb-2 line-clamp-2 uppercase group-hover:text-green-900 transition">
-                      {item.title}
-                    </h3>
-
-                    <p className="text-gray-600 text-sm flex-grow line-clamp-3 leading-relaxed">
-                      {item.content}
-                    </p>
-
-                    {/* Metadata */}
-                    <div className="mt-4 text-xs text-gray-500 flex justify-between">
-                      <span>
-                        {new Date(item.created_at).toLocaleDateString("id-ID", {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        })}
-                      </span>
-                      <span>{item.author_name || "Admin"}</span>
+                  <div className="p-6 flex flex-col flex-grow justify-between">
+                    <div>
+                      <h3 className="font-bold text-xl text-green-700 mb-2 line-clamp-2 uppercase group-hover:text-green-900 transition">
+                        {item.title}
+                      </h3>
+                      <p className="text-gray-600 text-sm line-clamp-3 leading-relaxed">
+                        {item.content}
+                      </p>
                     </div>
 
-                    {/* Lihat Selengkapnya */}
-                    <a
-                      href={`/news/${item.id}`}
-                      className="mt-4 inline-block text-green-700 font-semibold hover:text-green-900 transition text-sm"
-                    >
-                      Lihat Selengkapnya →
-                    </a>
+                    {/* Bagian bawah selalu sejajar */}
+                    <div className="mt-6">
+                      {/* Metadata */}
+                      <div className="text-xs text-gray-500 flex justify-between mb-2">
+                        <span>
+                          {new Date(item.created_at).toLocaleDateString(
+                            "id-ID",
+                            {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            }
+                          )}
+                        </span>
+                        <span>{item.author_name || "Admin"}</span>
+                      </div>
+
+                      {/* Lihat Selengkapnya */}
+                      <a
+                        href={`/news/${item.id}`}
+                        className="inline-block text-green-700 font-semibold hover:text-green-900 transition text-sm"
+                      >
+                        Lihat Selengkapnya →
+                      </a>
+                    </div>
                   </div>
                 </motion.div>
               </SwiperSlide>

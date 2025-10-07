@@ -11,26 +11,69 @@ import {
   Layers,
   Menu,
   X,
+  Building2,
+  Network,
 } from "lucide-react";
 
 export default function Sidebar({ role }) {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
-  const navItems = [
-    { path: "/admin", label: "Dashboard", icon: Home },
-    { path: "/admin/news", label: "Berita", icon: Newspaper },
-    ...(role === "superadmin"
+  // 🔹 Kategori menu (dengan grup)
+  const menuGroups = [
+    {
+      title: "MAIN MENU",
+      items: [{ path: "/admin", label: "Dashboard", icon: Home }],
+    },
+    {
+      title: "KONTEN",
+      items: [
+        { path: "/admin/news", label: "Berita", icon: Newspaper },
+        ...(role?.toLowerCase() === "superadmin"
+          ? [
+              { path: "/admin/info", label: "Informasi", icon: Info },
+              { path: "/admin/categories", label: "Kategori", icon: Layers },
+            ]
+          : []),
+      ],
+    },
+    ...(role?.toLowerCase() === "superadmin"
       ? [
-          { path: "/admin/info", label: "Informasi", icon: Info },
-          { path: "/admin/categories", label: "Kategori", icon: Layers },
-          { path: "/admin/pengurus", label: "Kepengurusan", icon: BookOpenText },
-          { path: "/admin/partners", label: "Kemitraan", icon: Handshake },
-          { path: "/admin/users", label: "Admin", icon: Users },
+          {
+            title: "KEPENGURUSAN",
+            items: [
+              {
+                path: "/admin/pengurus",
+                label: "Sejarah Kepengurusan",
+                icon: BookOpenText,
+              },
+              {
+                path: "/admin/dpd",
+                label: "Dewan Pengurus Daerah",
+                icon: Building2,
+              },
+              {
+                path: "/admin/struktur",
+                label: "Struktur Organisasi",
+                icon: Network,
+              },
+            ],
+          },
+          {
+            title: "RELASI",
+            items: [
+              { path: "/admin/partners", label: "Kemitraan", icon: Handshake },
+            ],
+          },
+          {
+            title: "PENGATURAN",
+            items: [{ path: "/admin/users", label: "Admin", icon: Users }],
+          },
         ]
       : []),
   ];
 
+  // 🔹 Logout
   const handleLogout = () => {
     localStorage.removeItem("user");
     window.location.href = "/login";
@@ -38,7 +81,7 @@ export default function Sidebar({ role }) {
 
   return (
     <>
-      {/* 🔹 Hamburger Button (Mobile Only) */}
+      {/* 🔹 Tombol Hamburger (Mobile) */}
       <button
         className="lg:hidden fixed top-4 left-4 z-50 bg-green-700 text-white p-2 rounded-lg shadow-md hover:bg-green-800 transition"
         onClick={() => setIsOpen(true)}
@@ -46,7 +89,7 @@ export default function Sidebar({ role }) {
         <Menu size={22} />
       </button>
 
-      {/* 🔹 Overlay Background (Mobile Only) */}
+      {/* 🔹 Overlay (Mobile) */}
       {isOpen && (
         <div
           onClick={() => setIsOpen(false)}
@@ -60,7 +103,7 @@ export default function Sidebar({ role }) {
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        {/* Header */}
+        {/* Header Sidebar */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-green-700">
           <div className="flex items-center gap-3">
             <img
@@ -69,12 +112,14 @@ export default function Sidebar({ role }) {
               className="w-10 h-10 object-contain rounded-full bg-white p-1"
             />
             <div>
-              <h1 className="font-extrabold text-lg tracking-wide">HISPPI PNF</h1>
+              <h1 className="font-extrabold text-lg tracking-wide">
+                HISPPI PNF
+              </h1>
               <p className="text-xs text-green-200">Dashboard Administrator</p>
             </div>
           </div>
 
-          {/* Tombol Close di mobile */}
+          {/* Tombol Close (Mobile) */}
           <button
             onClick={() => setIsOpen(false)}
             className="lg:hidden text-green-100 hover:text-white transition"
@@ -83,29 +128,46 @@ export default function Sidebar({ role }) {
           </button>
         </div>
 
-        {/* Menu */}
-        <nav className="flex-1 px-3 py-5 space-y-1 overflow-y-auto">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const active = location.pathname === item.path;
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                onClick={() => setIsOpen(false)} // tutup menu saat klik di mobile
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${
-                  active
-                    ? "bg-green-700 text-white shadow-inner"
-                    : "text-green-100 hover:bg-green-700/50 hover:text-white"
-                }`}
-              >
-                <Icon size={18} /> <span>{item.label}</span>
-              </Link>
-            );
-          })}
+        {/* Menu Navigasi */}
+        <nav className="flex-1 px-3 py-4 overflow-y-auto sidebar-scroll">
+          {menuGroups.map(
+            (group, idx) =>
+              group.items.length > 0 && (
+                <div key={idx} className="mb-5">
+                  <h2 className="text-xs font-semibold text-green-300 uppercase px-4 mb-2 tracking-wide">
+                    {group.title}
+                  </h2>
+                  <div className="space-y-1">
+                    {group.items.map((item) => {
+                      const Icon = item.icon;
+                      const isActive =
+                        item.path === "/admin"
+                          ? location.pathname === "/admin"
+                          : location.pathname.startsWith(item.path);
+
+                      return (
+                        <Link
+                          key={item.path}
+                          to={item.path}
+                          onClick={() => setIsOpen(false)}
+                          className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 ${
+                            isActive
+                              ? "bg-green-700 text-white shadow-inner"
+                              : "text-green-100 hover:bg-green-700/50 hover:text-white"
+                          }`}
+                        >
+                          <Icon size={18} />
+                          <span>{item.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              )
+          )}
         </nav>
 
-        {/* Footer / Logout */}
+        {/* Footer / Tombol Logout */}
         <div className="p-4 border-t border-green-700">
           <button
             onClick={handleLogout}

@@ -12,7 +12,7 @@ export default function Kemitraan() {
   }, []);
 
   return (
-    <section className="py-20 bg-gradient-to-b from-white to-green-50">
+    <section className="py-20 bg-gradient-to-b from-gray-50 to-green-100">
       <div className="max-w-6xl mx-auto px-6">
         {/* Judul Section */}
         <motion.div

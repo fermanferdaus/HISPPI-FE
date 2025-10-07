@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Pencil, CheckCircle2, AlertTriangle } from "lucide-react";
+import { Pencil, CheckCircle2, AlertTriangle, Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { API_BASE_URL } from "../../config/api";
 
@@ -8,6 +8,7 @@ export default function InfoAdmin() {
   const [editing, setEditing] = useState(null);
   const [content, setContent] = useState("");
   const [alert, setAlert] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const token = JSON.parse(localStorage.getItem("user"))?.token;
 
   // 🔹 Fetch data info
@@ -71,6 +72,7 @@ export default function InfoAdmin() {
   // 🔹 Komponen kartu info
   const renderCard = (section, title) => (
     <motion.div
+      key={section}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-200"
@@ -124,17 +126,46 @@ export default function InfoAdmin() {
     </motion.div>
   );
 
+  // 🔹 Filter pencarian
+  const sections = [
+    { key: "sejarah", title: "Sejarah" },
+    { key: "visi", title: "Visi" },
+    { key: "misi", title: "Misi" },
+    { key: "tujuan", title: "Tujuan" },
+    { key: "fungsi", title: "Fungsi" },
+    { key: "proker_pendek", title: "Program Kerja Jangka Pendek" },
+    { key: "proker_panjang", title: "Program Kerja Jangka Panjang" },
+  ];
+
+  const filteredSections = sections.filter((s) =>
+    s.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="p-4">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-green-700">
-          Informasi Institusi
-        </h1>
-        <p className="text-gray-500 text-sm mt-1">
-          Kelola sejarah, visi, misi, tujuan, fungsi, dan program kerja
-          organisasi.
-        </p>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-3">
+        <div>
+          <h1 className="text-3xl font-bold text-green-700">
+            Informasi Institusi
+          </h1>
+          <p className="text-gray-500 text-sm mt-1">
+            Kelola sejarah, visi, misi, tujuan, fungsi, dan program kerja
+            organisasi.
+          </p>
+        </div>
+
+        {/* Search bar */}
+        <div className="relative w-full md:w-64">
+          <Search size={16} className="absolute left-3 top-3 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Cari bagian..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none text-sm"
+          />
+        </div>
       </div>
 
       {/* Alert */}
@@ -161,28 +192,38 @@ export default function InfoAdmin() {
       </AnimatePresence>
 
       {/* Grid Layout */}
-      <div className="space-y-8">
-        {/* Sejarah */}
-        {renderCard("sejarah", "Sejarah")}
-
-        {/* Visi & Misi */}
-        <div className="grid md:grid-cols-2 gap-8">
-          {renderCard("visi", "Visi")}
-          {renderCard("misi", "Misi")}
+      {filteredSections.length === 0 ? (
+        <p className="text-gray-500 text-center italic py-8">
+          Tidak ada hasil untuk "{searchTerm}"
+        </p>
+      ) : (
+        <div className="space-y-8">
+          {filteredSections.map((s) => {
+            if (["visi", "misi"].includes(s.key))
+              return (
+                <div key={s.key} className="grid md:grid-cols-2 gap-8">
+                  {renderCard("visi", "Visi")}
+                  {renderCard("misi", "Misi")}
+                </div>
+              );
+            if (["tujuan", "fungsi"].includes(s.key))
+              return (
+                <div key={s.key} className="grid md:grid-cols-2 gap-8">
+                  {renderCard("tujuan", "Tujuan")}
+                  {renderCard("fungsi", "Fungsi")}
+                </div>
+              );
+            if (["proker_pendek", "proker_panjang"].includes(s.key))
+              return (
+                <div key={s.key} className="grid md:grid-cols-2 gap-8">
+                  {renderCard("proker_pendek", "Program Kerja Jangka Pendek")}
+                  {renderCard("proker_panjang", "Program Kerja Jangka Panjang")}
+                </div>
+              );
+            return renderCard(s.key, s.title);
+          })}
         </div>
-
-        {/* Tujuan & Fungsi */}
-        <div className="grid md:grid-cols-2 gap-8">
-          {renderCard("tujuan", "Tujuan")}
-          {renderCard("fungsi", "Fungsi")}
-        </div>
-
-        {/* Program Kerja */}
-        <div className="grid md:grid-cols-2 gap-8">
-          {renderCard("proker_pendek", "Program Kerja Jangka Pendek")}
-          {renderCard("proker_panjang", "Program Kerja Jangka Panjang")}
-        </div>
-      </div>
+      )}
     </div>
   );
 }

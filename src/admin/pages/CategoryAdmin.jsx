@@ -7,11 +7,14 @@ import {
   XCircle,
   AlertTriangle,
   CheckCircle2,
+  Search,
 } from "lucide-react";
 import { API_BASE_URL } from "../../config/api";
 
 export default function CategoryAdmin() {
   const [categories, setCategories] = useState([]);
+  const [filteredCategories, setFilteredCategories] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [newName, setNewName] = useState("");
   const [editId, setEditId] = useState(null);
   const [editName, setEditName] = useState("");
@@ -28,6 +31,7 @@ export default function CategoryAdmin() {
       });
       const data = await res.json();
       setCategories(data);
+      setFilteredCategories(data);
     } catch (err) {
       console.error("Gagal memuat kategori:", err);
     }
@@ -36,6 +40,15 @@ export default function CategoryAdmin() {
   useEffect(() => {
     fetchCategories();
   }, []);
+
+  // 🔍 Pencarian realtime
+  useEffect(() => {
+    const term = searchTerm.toLowerCase();
+    const filtered = categories.filter((cat) =>
+      cat.name.toLowerCase().includes(term)
+    );
+    setFilteredCategories(filtered);
+  }, [searchTerm, categories]);
 
   const showAlert = (type, message) => {
     setAlert({ type, message });
@@ -64,8 +77,7 @@ export default function CategoryAdmin() {
       } else {
         showAlert("error", "Gagal menambahkan kategori.");
       }
-    } catch (err) {
-      console.error("Gagal menambah kategori:", err);
+    } catch {
       showAlert("error", "Terjadi kesalahan server.");
     } finally {
       setLoading(false);
@@ -91,8 +103,7 @@ export default function CategoryAdmin() {
       } else {
         showAlert("error", "Gagal memperbarui kategori.");
       }
-    } catch (err) {
-      console.error("Gagal memperbarui kategori:", err);
+    } catch {
       showAlert("error", "Terjadi kesalahan server saat memperbarui.");
     }
   };
@@ -114,8 +125,7 @@ export default function CategoryAdmin() {
       } else {
         showAlert("error", "Gagal menghapus kategori.");
       }
-    } catch (err) {
-      console.error("Gagal menghapus kategori:", err);
+    } catch {
       showAlert("error", "Terjadi kesalahan server saat menghapus kategori.");
     } finally {
       setDeleteTarget(null);
@@ -131,6 +141,18 @@ export default function CategoryAdmin() {
           Tambah, ubah, dan hapus kategori berita yang digunakan pada sistem
           HISPPI PNF.
         </p>
+      </div>
+
+      {/* 🔍 Pencarian */}
+      <div className="mb-6 flex items-center gap-3 bg-white border border-gray-200 rounded-lg px-4 py-2 shadow-sm max-w-sm">
+        <Search size={18} className="text-gray-500" />
+        <input
+          type="text"
+          placeholder="Cari kategori..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full outline-none text-sm text-gray-700 placeholder-gray-400"
+        />
       </div>
 
       {/* Alert */}
@@ -180,8 +202,6 @@ export default function CategoryAdmin() {
       {/* ✅ Tabel Responsif */}
       <div className="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          {" "}
-          {/* ✅ Tambahkan ini */}
           <table className="w-full min-w-[500px] text-sm text-left">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
@@ -191,79 +211,82 @@ export default function CategoryAdmin() {
                 <th className="px-6 py-3 text-gray-700 font-semibold">
                   Nama Kategori
                 </th>
-                <th className="px-6 py-3 text-gray-700 font-semibold w-40">
+                <th className="px-6 py-3 text-gray-700 font-semibold w-40 text-center">
                   Aksi
                 </th>
               </tr>
             </thead>
             <tbody>
-              {categories.map((cat, i) => (
-                <tr
-                  key={cat.id}
-                  className="border-b border-gray-100 hover:bg-gray-50 transition-all"
-                >
-                  <td className="px-6 py-3 text-gray-700 font-medium">
-                    {i + 1}
-                  </td>
-                  <td className="px-6 py-3 text-gray-800 font-medium">
-                    {editId === cat.id ? (
-                      <input
-                        className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-700 focus:ring-2 focus:ring-green-500 focus:outline-none"
-                        value={editName}
-                        onChange={(e) => setEditName(e.target.value)}
-                        autoFocus
-                      />
-                    ) : (
-                      cat.name
-                    )}
-                  </td>
-                  <td className="px-6 py-3 text-center">
-                    {editId === cat.id ? (
-                      <div className="flex justify-center gap-2">
-                        <button
-                          onClick={() => handleUpdate(cat.id)}
-                          className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-xs font-medium transition-all shadow-sm"
-                        >
-                          <Save size={14} /> Simpan
-                        </button>
-                        <button
-                          onClick={() => setEditId(null)}
-                          className="flex items-center gap-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded-md text-xs font-medium transition-all shadow-sm"
-                        >
-                          <XCircle size={14} /> Batal
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="flex justify-center gap-2">
-                        <button
-                          onClick={() => {
-                            setEditId(cat.id);
-                            setEditName(cat.name);
-                          }}
-                          className="flex items-center gap-1 bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded-md text-xs font-medium transition-all shadow-sm"
-                        >
-                          <Edit2 size={14} /> Edit
-                        </button>
-                        <button
-                          onClick={() =>
-                            setDeleteTarget({ id: cat.id, name: cat.name })
-                          }
-                          className="flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-xs font-medium transition-all shadow-sm"
-                        >
-                          <Trash2 size={14} /> Hapus
-                        </button>
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              ))}
-              {categories.length === 0 && (
+              {filteredCategories.length > 0 ? (
+                filteredCategories.map((cat, i) => (
+                  <tr
+                    key={cat.id}
+                    className="border-b border-gray-100 hover:bg-gray-50 transition-all"
+                  >
+                    <td className="px-6 py-3 text-gray-700 font-medium">
+                      {i + 1}
+                    </td>
+                    <td className="px-6 py-3 text-gray-800 font-medium">
+                      {editId === cat.id ? (
+                        <input
+                          className="w-full border border-gray-300 rounded-md px-3 py-2 text-gray-700 focus:ring-2 focus:ring-green-500 focus:outline-none"
+                          value={editName}
+                          onChange={(e) => setEditName(e.target.value)}
+                          autoFocus
+                        />
+                      ) : (
+                        cat.name
+                      )}
+                    </td>
+                    <td className="px-6 py-3 text-center">
+                      {editId === cat.id ? (
+                        <div className="flex justify-center gap-2">
+                          <button
+                            onClick={() => handleUpdate(cat.id)}
+                            className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-xs font-medium transition-all shadow-sm"
+                          >
+                            Simpan
+                          </button>
+                          <button
+                            onClick={() => setEditId(null)}
+                            className="flex items-center gap-1 bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded-md text-xs font-medium transition-all shadow-sm"
+                          >
+                            Batal
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex justify-center gap-2">
+                          <button
+                            onClick={() => {
+                              setEditId(cat.id);
+                              setEditName(cat.name);
+                            }}
+                            className="flex items-center gap-1 bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded-md text-xs font-medium transition-all shadow-sm"
+                          >
+                            <Edit2 size={14} /> Edit
+                          </button>
+                          <button
+                            onClick={() =>
+                              setDeleteTarget({ id: cat.id, name: cat.name })
+                            }
+                            className="flex items-center gap-1 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-xs font-medium transition-all shadow-sm"
+                          >
+                            <Trash2 size={14} /> Hapus
+                          </button>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              ) : (
                 <tr>
                   <td
                     colSpan="3"
                     className="text-center py-6 text-gray-500 italic"
                   >
-                    Belum ada kategori yang ditambahkan.
+                    {searchTerm
+                      ? "Tidak ada hasil pencarian."
+                      : "Belum ada kategori yang ditambahkan."}
                   </td>
                 </tr>
               )}

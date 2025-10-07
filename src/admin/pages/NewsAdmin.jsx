@@ -21,7 +21,7 @@ export default function NewsAdmin() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 🔹 Ambil data berita dari backend
+  // 🔹 Ambil data berita
   const fetchNews = async () => {
     try {
       const res = await fetch(`${API_BASE_URL}/news`, {
@@ -45,7 +45,7 @@ export default function NewsAdmin() {
     fetchNews();
   }, []);
 
-  // 🔹 Tampilkan alert setelah tambah/edit/hapus
+  // 🔹 Alert setelah tambah/edit/hapus
   useEffect(() => {
     if (location.state?.alert) {
       setAlert(location.state.alert);
@@ -55,18 +55,19 @@ export default function NewsAdmin() {
     }
   }, [location.state]);
 
-  // 🔹 Search (filter berita)
+  // 🔍 Pencarian realtime
   useEffect(() => {
+    const term = searchTerm.toLowerCase();
     const filtered = news.filter(
       (n) =>
-        n.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        n.author_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (n.category || "").toLowerCase().includes(searchTerm.toLowerCase())
+        n.title.toLowerCase().includes(term) ||
+        n.author_name.toLowerCase().includes(term) ||
+        (n.category || "").toLowerCase().includes(term)
     );
     setFilteredNews(filtered);
   }, [searchTerm, news]);
 
-  // 🔹 Fungsi hapus berita
+  // 🔹 Hapus berita
   const confirmDelete = async () => {
     if (!deleteTarget) return;
     const { id, title } = deleteTarget;
@@ -111,35 +112,33 @@ export default function NewsAdmin() {
   return (
     <div className="p-4 relative">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-3">
         <div>
           <h1 className="text-3xl font-bold text-green-700">Kelola Berita</h1>
           <p className="text-gray-500 text-sm mt-1">
-            Lihat, cari, dan kelola berita yang telah ditambahkan.
+            Tambah, ubah, atau hapus berita yang ditampilkan di website HISPPI
+            PNF.
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
-          {/* Search bar */}
-          <div className="relative w-full sm:w-64">
-            <Search size={16} className="absolute left-3 top-3 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Cari berita..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none text-sm"
-            />
-          </div>
+        <button
+          onClick={() => navigate("add")}
+          className="flex items-center gap-2 bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition-all shadow-sm"
+        >
+          <PlusCircle size={18} /> Tambah Berita
+        </button>
+      </div>
 
-          {/* Tombol tambah */}
-          <button
-            onClick={() => navigate("add")}
-            className="flex items-center gap-2 bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 transition text-sm shadow-sm"
-          >
-            <PlusCircle size={18} /> Tambah Berita
-          </button>
-        </div>
+      {/* 🔍 Pencarian */}
+      <div className="mb-6 flex items-center gap-3 bg-white border border-gray-200 rounded-lg px-4 py-2 shadow-sm max-w-sm">
+        <Search size={18} className="text-gray-500" />
+        <input
+          type="text"
+          placeholder="Cari judul, penulis, atau kategori..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full outline-none text-sm text-gray-700 placeholder-gray-400"
+        />
       </div>
 
       {/* Alert */}
@@ -163,7 +162,9 @@ export default function NewsAdmin() {
       {/* Card Grid */}
       {filteredNews.length === 0 ? (
         <p className="text-center text-gray-500 italic py-10">
-          Tidak ada berita ditemukan.
+          {searchTerm
+            ? "Tidak ada hasil pencarian."
+            : "Belum ada berita ditambahkan."}
         </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -238,7 +239,7 @@ export default function NewsAdmin() {
               Apakah Anda yakin ingin menghapus berita{" "}
               <span className="font-semibold text-gray-800">
                 “{deleteTarget.title}”
-              </span>{" "}
+              </span>
               ? Tindakan ini tidak dapat dibatalkan.
             </p>
             <div className="flex justify-end gap-3">
